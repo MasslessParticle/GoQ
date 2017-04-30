@@ -1,13 +1,17 @@
 package goq
 
 import (
-	"sync"
 	"errors"
+	"sync"
 )
 
 type QClient interface {
 	Id() string
 	Notify(message Message)
+}
+
+type Publisher interface {
+	Publish(msg Message, subscribers *Subscribers) bool
 }
 
 type Message struct {
@@ -18,22 +22,22 @@ type Message struct {
 type GoQ struct {
 	maxDepth    int
 	queue       chan Message
-	subscribers subscribers
+	subscribers Subscribers
 	doneChan    chan bool
 	lock        sync.Mutex
+	pub         Publisher
 }
 
-func NewGoQ(queueDepth int) *GoQ {
+func NewGoQ(queueDepth int, publisher Publisher) *GoQ {
+	subscribers := NewSubscribersList()
+
 	return &GoQ{
-		maxDepth: queueDepth,
-		queue: make(chan Message, queueDepth),
-		subscribers: newSubscribersList(),
-		doneChan: make(chan bool, 1),
+		maxDepth:    queueDepth,
+		queue:       make(chan Message, queueDepth),
+		subscribers: subscribers,
+		doneChan:    make(chan bool, 1),
+		pub:         publisher,
 	}
-}
-
-func (q *GoQ) QueuedMessages() int {
-	return len(q.queue)
 }
 
 func (q *GoQ) Enqueue(message Message) error {
@@ -46,50 +50,37 @@ func (q *GoQ) Enqueue(message Message) error {
 }
 
 func (q *GoQ) Subscribe(client QClient) error {
-	if q.subscribers.contains(client) {
-		return errors.New("Duplicate Clinet Id")
-	}
-
-	q.subscribers.append(client)
-	return nil
+	return q.subscribers.Append(client)
 }
 
 func (q *GoQ) Unsubscribe(qClient QClient) {
-	q.subscribers.remove(qClient)
+	q.subscribers.Remove(qClient)
 }
 
 func (q *GoQ) IsSubscribed(qClient QClient) bool {
-	return q.subscribers.contains(qClient)
+	return q.subscribers.Contains(qClient)
 }
 
 func (q *GoQ) StartPublishing() {
-	//TODO: Here is where to implement notification strategies
 	go func() {
-		nextNotified := -1
 		for msg := range q.queue {
 			select {
 			case <-q.doneChan:
 				return
 			default:
-				nextNotified = q.notifyNext(nextNotified, msg)
+				q.publishMessage(msg)
 			}
 		}
 	}()
 }
 
-func (q *GoQ) StopPublishing() {
-	q.doneChan <- true
-}
-
-func (q *GoQ) notifyNext(nextIndex int, msg Message) int {
-	numSubScribers := q.subscribers.size()
-
-	if numSubScribers > 0 {
-		nextIndex = (nextIndex + 1) % numSubScribers
-		q.subscribers.get(nextIndex).Notify(msg)
-	} else {
+func (q *GoQ) publishMessage(msg Message) {
+	delivered := q.pub.Publish(msg, &q.subscribers)
+	if !delivered {
 		q.queue <- msg
 	}
+}
 
-	return nextIndex
+func (q *GoQ) StopPublishing() {
+	q.doneChan <- true
 }

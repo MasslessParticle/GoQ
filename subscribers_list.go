@@ -1,57 +1,65 @@
 package goq
 
-import "sync"
+import (
+	"errors"
+	"sync"
+)
 
-type subscribers struct {
+type Subscribers struct {
 	sync.RWMutex
 	items []QClient
 }
 
-func newSubscribersList() subscribers {
-	return subscribers{
+func NewSubscribersList() Subscribers {
+	return Subscribers{
 		items: make([]QClient, 0),
 	}
 }
 
-func (s *subscribers) append(client QClient) {
+func (s *Subscribers) Append(client QClient) error {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
+	if s.indexOf(client.Id()) >= 0 {
+		return errors.New("Duplicate client ids aren't allowed")
+	}
+
 	s.items = append(s.items, client)
+	return nil
 }
 
-func (s *subscribers) remove(client QClient) {
+func (s *Subscribers) Remove(client QClient) {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
 	subIndex := s.indexOf(client.Id())
 	if subIndex >= 0 {
-		s.items = append(s.items[:subIndex], s.items[subIndex + 1:]...)
+		s.items = append(s.items[:subIndex], s.items[subIndex+1:]...)
 	}
 }
 
-func (s *subscribers) contains(client QClient) bool {
+func (s *Subscribers) Contains(client QClient) bool {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
 	return s.indexOf(client.Id()) >= 0
 }
 
-func (s *subscribers) get(index int) QClient {
+func (s *Subscribers) Get(index int) QClient {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
 	return s.items[index]
 }
 
-func (s *subscribers) size() int {
+func (s *Subscribers) Size() int {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
 	return len(s.items)
 }
 
-func (s *subscribers) indexOf(qClientId string) int {
+func (s *Subscribers) indexOf(qClientId string) int {
 	for i, item := range s.items {
 		if item.Id() == qClientId {
 			return i
