@@ -17,7 +17,7 @@ func NewSubscribersList() *SubscriberList {
 	}
 }
 
-func (s *SubscriberList) Append(client goq.QClient) error {
+func (s *SubscriberList) Subscribe(client goq.QClient) error {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
@@ -29,7 +29,7 @@ func (s *SubscriberList) Append(client goq.QClient) error {
 	return nil
 }
 
-func (s *SubscriberList) Remove(client goq.QClient) {
+func (s *SubscriberList) Unsubscribe(client goq.QClient) {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
@@ -39,7 +39,7 @@ func (s *SubscriberList) Remove(client goq.QClient) {
 	}
 }
 
-func (s *SubscriberList) Contains(client goq.QClient) bool {
+func (s *SubscriberList) IsSubscribed(client goq.QClient) bool {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 

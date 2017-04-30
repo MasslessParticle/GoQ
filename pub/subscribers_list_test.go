@@ -10,10 +10,10 @@ import (
 var _ = Describe("SubscribersList", func() {
 	It("doesn't allow duplicate ids", func() {
 		subscribers := pub.NewSubscribersList()
-		err := subscribers.Append(testhelpers.NewTestClient("Subscriber - 1"))
+		err := subscribers.Subscribe(testhelpers.NewTestClient("Subscriber - 1"))
 		Expect(err).ToNot(HaveOccurred())
 
-		err = subscribers.Append(testhelpers.NewTestClient("Subscriber - 1"))
+		err = subscribers.Subscribe(testhelpers.NewTestClient("Subscriber - 1"))
 		Expect(err).To(HaveOccurred())
 	})
 })

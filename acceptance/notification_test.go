@@ -14,7 +14,7 @@ var _ = Describe("Notification", func() {
 
 		client := testhelpers.NewTestClient("Subscription - 1")
 		publisher.Subscribe(client)
-		
+
 		queue := goq.NewGoQ(25, publisher)
 
 		queue.StartPublishing()
