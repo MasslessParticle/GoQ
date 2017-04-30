@@ -14,7 +14,7 @@ type Publisher interface {
 	Publish(msg Message) bool
     Subscribe(client QClient) error
     Unsubscribe(qClient QClient)
-    IsSubscribed(qClient QClient) bool
+	SubscriberCount() int
 }
 
 type Message struct {

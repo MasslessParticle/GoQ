@@ -39,13 +39,6 @@ func (s *SubscriberList) Unsubscribe(client goq.QClient) {
 	}
 }
 
-func (s *SubscriberList) IsSubscribed(client goq.QClient) bool {
-	s.RWMutex.Lock()
-	defer s.RWMutex.Unlock()
-
-	return s.indexOf(client.Id()) >= 0
-}
-
 func (s *SubscriberList) Get(index int) goq.QClient {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
@@ -53,7 +46,7 @@ func (s *SubscriberList) Get(index int) goq.QClient {
 	return s.items[index]
 }
 
-func (s *SubscriberList) Size() int {
+func (s *SubscriberList) SubscriberCount() int {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 

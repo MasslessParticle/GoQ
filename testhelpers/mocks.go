@@ -52,8 +52,8 @@ func (tp *TestPublisher) Subscribe(client goq.QClient) error {
 	return nil
 }
 
-func (tp *TestPublisher) IsSubscribed(qClient goq.QClient) bool {
-	return false
-}
-
 func (tp *TestPublisher) Unsubscribe(qClient goq.QClient) {}
+
+func (tp *TestPublisher) SubscriberCount() int {
+	return 0
+}

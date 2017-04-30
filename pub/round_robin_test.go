@@ -16,48 +16,8 @@ var _ = Describe("RoundRobin", func() {
 		roundRobin = NewRoundRobinPublisher()
 	})
 
-	Context("Subscribe", func() {
-		It("can store client subscriptions", func() {
-			client := testhelpers.NewTestClient("subscriber-1")
-
-			err := roundRobin.Subscribe(client)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(roundRobin.IsSubscribed(client)).To(BeTrue())
-		})
-
-		It("returns an error when a client with the same Id attempts to subscribe", func() {
-			client := testhelpers.NewTestClient("subscriber-1")
-
-			err := roundRobin.Subscribe(client)
-			Expect(err).ToNot(HaveOccurred())
-
-			client2 := testhelpers.NewTestClient("subscriber-1")
-
-			err = roundRobin.Subscribe(client2)
-			Expect(err).To(HaveOccurred())
-
-			Expect(roundRobin.IsSubscribed(client)).To(BeTrue())
-		})
-
-		It("can unsubscribe clients", func() {
-			client := testhelpers.NewTestClient("subscriber-1")
-
-			err := roundRobin.Subscribe(client)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(roundRobin.IsSubscribed(client)).To(BeTrue())
-
-			roundRobin.Unsubscribe(client)
-			Expect(roundRobin.IsSubscribed(client)).To(BeFalse())
-		})
-	})
-
 	Context("Publish", func() {
 		It("doesn't deliver the message when there aren't subscribers", func() {
-			delivered := roundRobin.Publish(goq.Message{Id: "Message - 1"})
-			Expect(delivered).To(BeFalse())
-		})
-
-		It("doesn't deliver messages when subscribers haven't been set", func() {
 			delivered := roundRobin.Publish(goq.Message{Id: "Message - 1"})
 			Expect(delivered).To(BeFalse())
 		})

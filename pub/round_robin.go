@@ -20,7 +20,7 @@ func NewRoundRobinPublisher() *RoundRobinPublisher {
 }
 
 func (rr *RoundRobinPublisher) Publish(msg goq.Message) bool {
-	numSubScribers := rr.Size()
+	numSubScribers := rr.SubscriberCount()
 	if numSubScribers > 0 {
 		rr.nextNotified = (rr.nextNotified + 1) % numSubScribers
 		rr.Get(rr.nextNotified).Notify(msg)
