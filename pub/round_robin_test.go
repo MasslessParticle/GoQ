@@ -10,24 +10,55 @@ import (
 )
 
 var _ = Describe("RoundRobin", func() {
-	Context("Publish", func() {
-		var subscribers goq.Subscribers
+	var roundRobin *RoundRobinPublisher
 
-		BeforeEach(func() {
-			subscribers = goq.NewSubscribersList()
+	BeforeEach(func () {
+		roundRobin = NewRoundRobinPublisher()
+	})
+
+	Context("Subscribe", func() {
+		It("can store client subscriptions", func() {
+			client := testhelpers.NewTestClient("subscriber-1")
+
+			err := roundRobin.Subscribe(client)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(roundRobin.IsSubscribed(client)).To(BeTrue())
 		})
 
-		It("doesn't deliver the message when there aren't subscribers", func() {
-			roundRobin := NewRoundRobinPublisher()
+		It("returns an error when a client with the same Id attempts to subscribe", func() {
+			client := testhelpers.NewTestClient("subscriber-1")
 
-			delivered := roundRobin.Publish(goq.Message{Id: "Message - 1"}, &subscribers)
+			err := roundRobin.Subscribe(client)
+			Expect(err).ToNot(HaveOccurred())
+
+			client2 := testhelpers.NewTestClient("subscriber-1")
+
+			err = roundRobin.Subscribe(client2)
+			Expect(err).To(HaveOccurred())
+
+			Expect(roundRobin.IsSubscribed(client)).To(BeTrue())
+		})
+
+		It("can unsubscribe clients", func() {
+			client := testhelpers.NewTestClient("subscriber-1")
+
+			err := roundRobin.Subscribe(client)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(roundRobin.IsSubscribed(client)).To(BeTrue())
+
+			roundRobin.Unsubscribe(client)
+			Expect(roundRobin.IsSubscribed(client)).To(BeFalse())
+		})
+	})
+
+	Context("Publish", func() {
+		It("doesn't deliver the message when there aren't subscribers", func() {
+			delivered := roundRobin.Publish(goq.Message{Id: "Message - 1"})
 			Expect(delivered).To(BeFalse())
 		})
 
 		It("doesn't deliver messages when subscribers haven't been set", func() {
-			roundRobin := NewRoundRobinPublisher()
-
-			delivered := roundRobin.Publish(goq.Message{Id: "Message - 1"}, &subscribers)
+			delivered := roundRobin.Publish(goq.Message{Id: "Message - 1"})
 			Expect(delivered).To(BeFalse())
 		})
 
@@ -36,22 +67,20 @@ var _ = Describe("RoundRobin", func() {
 			subscriber2 := testhelpers.NewTestClient("Subscriber - 2")
 			subscriber3 := testhelpers.NewTestClient("Subscriber - 3")
 
-			subscribers.Append(subscriber)
-			subscribers.Append(subscriber2)
-			subscribers.Append(subscriber3)
+			roundRobin.Subscribe(subscriber)
+			roundRobin.Subscribe(subscriber2)
+			roundRobin.Subscribe(subscriber3)
 
-			roundRobin := NewRoundRobinPublisher()
-
-			delivered := roundRobin.Publish(goq.Message{Id: "Message - 1"}, &subscribers)
+			delivered := roundRobin.Publish(goq.Message{Id: "Message - 1"})
 			Expect(delivered).To(BeTrue())
 
-			delivered = roundRobin.Publish(goq.Message{Id: "Message - 2"}, &subscribers)
+			delivered = roundRobin.Publish(goq.Message{Id: "Message - 2"})
 			Expect(delivered).To(BeTrue())
 
-			delivered = roundRobin.Publish(goq.Message{Id: "Message - 3"}, &subscribers)
+			delivered = roundRobin.Publish(goq.Message{Id: "Message - 3"})
 			Expect(delivered).To(BeTrue())
 
-			delivered = roundRobin.Publish(goq.Message{Id: "Message - 4"}, &subscribers)
+			delivered = roundRobin.Publish(goq.Message{Id: "Message - 4"})
 			Expect(delivered).To(BeTrue())
 
 			message := goq.Message{}
@@ -73,18 +102,16 @@ var _ = Describe("RoundRobin", func() {
 			subscriber2 := testhelpers.NewTestClient("Subscriber - 2")
 			subscriber3 := testhelpers.NewTestClient("Subscriber - 3")
 
-			subscribers.Append(subscriber)
-			subscribers.Append(subscriber2)
-			subscribers.Append(subscriber3)
+			roundRobin.Subscribe(subscriber)
+			roundRobin.Subscribe(subscriber2)
+			roundRobin.Subscribe(subscriber3)
 
-			roundRobin := NewRoundRobinPublisher()
-
-			delivered := roundRobin.Publish(goq.Message{Id: "Message - 1"}, &subscribers)
+			delivered := roundRobin.Publish(goq.Message{Id: "Message - 1"})
 			Expect(delivered).To(BeTrue())
 
-			subscribers.Remove(subscriber2)
+			roundRobin.Unsubscribe(subscriber2)
 
-			delivered = roundRobin.Publish(goq.Message{Id: "Message - 2"}, &subscribers)
+			delivered = roundRobin.Publish(goq.Message{Id: "Message - 2"})
 			Expect(delivered).To(BeTrue())
 
 			message := goq.Message{}
@@ -102,15 +129,13 @@ var _ = Describe("RoundRobin", func() {
 			subscriber2 := testhelpers.NewTestClient("Subscriber - 2")
 			subscriber3 := testhelpers.NewTestClient("Subscriber - 3")
 
-			subscribers.Append(subscriber)
-			subscribers.Append(subscriber2)
+			roundRobin.Subscribe(subscriber)
+			roundRobin.Subscribe(subscriber2)
 
-			roundRobin := NewRoundRobinPublisher()
-
-			delivered := roundRobin.Publish(goq.Message{Id: "Message - 1"}, &subscribers)
+			delivered := roundRobin.Publish(goq.Message{Id: "Message - 1"})
 			Expect(delivered).To(BeTrue())
 
-			delivered = roundRobin.Publish(goq.Message{Id: "Message - 2"}, &subscribers)
+			delivered = roundRobin.Publish(goq.Message{Id: "Message - 2"})
 			Expect(delivered).To(BeTrue())
 
 			message := goq.Message{}
@@ -120,9 +145,9 @@ var _ = Describe("RoundRobin", func() {
 			Eventually(subscriber2.Notifications).Should(Receive(&message))
 			Expect(message.Id).To(Equal("Message - 2"))
 
-			subscribers.Append(subscriber3)
+			roundRobin.Subscribe(subscriber3)
 
-			delivered = roundRobin.Publish(goq.Message{Id: "Message - 3"}, &subscribers)
+			delivered = roundRobin.Publish(goq.Message{Id: "Message - 3"})
 			Expect(delivered).To(BeTrue())
 
 			Eventually(subscriber3.Notifications).Should(Receive(&message))

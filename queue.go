@@ -11,7 +11,10 @@ type QClient interface {
 }
 
 type Publisher interface {
-	Publish(msg Message, subscribers *Subscribers) bool
+	Publish(msg Message) bool
+    Subscribe(client QClient) error
+    Unsubscribe(qClient QClient)
+    IsSubscribed(qClient QClient) bool
 }
 
 type Message struct {
@@ -20,23 +23,19 @@ type Message struct {
 }
 
 type GoQ struct {
-	maxDepth    int
-	queue       chan Message
-	subscribers Subscribers
-	doneChan    chan bool
-	lock        sync.Mutex
-	pub         Publisher
+	Publisher Publisher
+	maxDepth  int
+	queue     chan Message
+	doneChan  chan bool
+	lock      sync.Mutex
 }
 
 func NewGoQ(queueDepth int, publisher Publisher) *GoQ {
-	subscribers := NewSubscribersList()
-
 	return &GoQ{
 		maxDepth:    queueDepth,
 		queue:       make(chan Message, queueDepth),
-		subscribers: subscribers,
 		doneChan:    make(chan bool, 1),
-		pub:         publisher,
+		Publisher:         publisher,
 	}
 }
 
@@ -47,18 +46,6 @@ func (q *GoQ) Enqueue(message Message) error {
 	}
 
 	return errors.New("Message rejected, max queue depth reached")
-}
-
-func (q *GoQ) Subscribe(client QClient) error {
-	return q.subscribers.Append(client)
-}
-
-func (q *GoQ) Unsubscribe(qClient QClient) {
-	q.subscribers.Remove(qClient)
-}
-
-func (q *GoQ) IsSubscribed(qClient QClient) bool {
-	return q.subscribers.Contains(qClient)
 }
 
 func (q *GoQ) StartPublishing() {
@@ -75,7 +62,7 @@ func (q *GoQ) StartPublishing() {
 }
 
 func (q *GoQ) publishMessage(msg Message) {
-	delivered := q.pub.Publish(msg, &q.subscribers)
+	delivered := q.Publisher.Publish(msg)
 	if !delivered {
 		q.queue <- msg
 	}

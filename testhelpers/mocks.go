@@ -2,6 +2,7 @@ package testhelpers
 
 import (
 	"github.com/masslessparticle/goq"
+	"github.com/masslessparticle/goq/pub"
 )
 
 type TestClient struct {
@@ -27,7 +28,7 @@ func (qc TestClient) Notify(message goq.Message) {
 type TestPublisher struct {
 	Responses   chan bool
 	Messages    chan goq.Message
-	Subscribers chan *goq.Subscribers
+	Subscribers chan *pub.SubscriberList
 }
 
 func NewTestPublisher() *TestPublisher {
@@ -37,7 +38,7 @@ func NewTestPublisher() *TestPublisher {
 	}
 }
 
-func (tp *TestPublisher) Publish(msg goq.Message, subscribers *goq.Subscribers) bool {
+func (tp *TestPublisher) Publish(msg goq.Message) bool {
 	tp.Messages <- msg
 
 	if len(tp.Responses) == 0 {
@@ -46,3 +47,13 @@ func (tp *TestPublisher) Publish(msg goq.Message, subscribers *goq.Subscribers) 
 
 	return <-tp.Responses
 }
+
+func (tp *TestPublisher) Subscribe(client goq.QClient) error {
+	return nil
+}
+
+func (tp *TestPublisher) IsSubscribed(qClient goq.QClient) bool {
+	return false
+}
+
+func (tp *TestPublisher) Unsubscribe(qClient goq.QClient) {}

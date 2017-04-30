@@ -11,10 +11,11 @@ import (
 var _ = Describe("Notification", func() {
 	It("Notifies a subscribed client", func() {
 		publisher := pub.NewRoundRobinPublisher()
-		queue := goq.NewGoQ(25, publisher)
 
 		client := testhelpers.NewTestClient("Subscription - 1")
-		queue.Subscribe(client)
+		publisher.Subscribe(client)
+		
+		queue := goq.NewGoQ(25, publisher)
 
 		queue.StartPublishing()
 

@@ -1,22 +1,23 @@
-package goq
+package pub
 
 import (
 	"errors"
 	"sync"
+	"github.com/masslessparticle/goq"
 )
 
-type Subscribers struct {
+type SubscriberList struct {
 	sync.RWMutex
-	items []QClient
+	items []goq.QClient
 }
 
-func NewSubscribersList() Subscribers {
-	return Subscribers{
-		items: make([]QClient, 0),
+func NewSubscribersList() *SubscriberList {
+	return &SubscriberList{
+		items: make([]goq.QClient, 0),
 	}
 }
 
-func (s *Subscribers) Append(client QClient) error {
+func (s *SubscriberList) Append(client goq.QClient) error {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
@@ -28,7 +29,7 @@ func (s *Subscribers) Append(client QClient) error {
 	return nil
 }
 
-func (s *Subscribers) Remove(client QClient) {
+func (s *SubscriberList) Remove(client goq.QClient) {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
@@ -38,28 +39,28 @@ func (s *Subscribers) Remove(client QClient) {
 	}
 }
 
-func (s *Subscribers) Contains(client QClient) bool {
+func (s *SubscriberList) Contains(client goq.QClient) bool {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
 	return s.indexOf(client.Id()) >= 0
 }
 
-func (s *Subscribers) Get(index int) QClient {
+func (s *SubscriberList) Get(index int) goq.QClient {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
 	return s.items[index]
 }
 
-func (s *Subscribers) Size() int {
+func (s *SubscriberList) Size() int {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
 	return len(s.items)
 }
 
-func (s *Subscribers) indexOf(qClientId string) int {
+func (s *SubscriberList) indexOf(qClientId string) int {
 	for i, item := range s.items {
 		if item.Id() == qClientId {
 			return i

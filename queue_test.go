@@ -43,52 +43,6 @@ var _ = Describe("Queue", func() {
 		})
 	})
 
-	Context("Subscribe", func() {
-		var publisher *testhelpers.TestPublisher
-
-		BeforeEach(func() {
-			publisher = testhelpers.NewTestPublisher()
-			publisher.Responses <- true
-		})
-
-		It("can store client subscriptions", func() {
-			queue := NewGoQ(25, publisher)
-			client := testhelpers.NewTestClient("subscriber-1")
-
-			err := queue.Subscribe(client)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(queue.IsSubscribed(client)).To(BeTrue())
-		})
-
-		It("returns an error when a client with the same Id attempts to subscribe", func() {
-			queue := NewGoQ(25, publisher)
-
-			client := testhelpers.NewTestClient("subscriber-1")
-
-			err := queue.Subscribe(client)
-			Expect(err).ToNot(HaveOccurred())
-
-			client2 := testhelpers.NewTestClient("subscriber-1")
-
-			err = queue.Subscribe(client2)
-			Expect(err).To(HaveOccurred())
-
-			Expect(queue.IsSubscribed(client)).To(BeTrue())
-		})
-
-		It("can unsubscribe clients", func() {
-			queue := NewGoQ(25, publisher)
-			client := testhelpers.NewTestClient("subscriber-1")
-
-			err := queue.Subscribe(client)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(queue.IsSubscribed(client)).To(BeTrue())
-
-			queue.Unsubscribe(client)
-			Expect(queue.IsSubscribed(client)).To(BeFalse())
-		})
-	})
-
 	Context("Notifications", func() {
 		It("sends the message to the publisher", func() {
 			publisher := testhelpers.NewTestPublisher()
