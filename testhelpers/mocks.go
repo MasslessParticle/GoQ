@@ -2,7 +2,7 @@ package testhelpers
 
 import (
 	"github.com/masslessparticle/goq"
-	"github.com/masslessparticle/goq/pub"
+	"github.com/masslessparticle/goq/pubsub"
 )
 
 type TestClient struct {
@@ -28,7 +28,7 @@ func (qc TestClient) Notify(message goq.Message) {
 type TestPublisher struct {
 	Responses   chan bool
 	Messages    chan goq.Message
-	Subscribers chan *pub.SubscriberList
+	Subscribers chan *pubsub.SubscriberList
 }
 
 func NewTestPublisher() *TestPublisher {

@@ -1,4 +1,4 @@
-package pub
+package pubsub
 
 import "github.com/masslessparticle/goq"
 

@@ -1,19 +1,18 @@
-package pub_test
+package pubsub_test
 
 import (
-	. "github.com/masslessparticle/goq/pub"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/masslessparticle/goq"
 	"github.com/masslessparticle/goq/testhelpers"
+	"github.com/masslessparticle/goq/pubsub"
 )
 
 var _ = Describe("AllPublisher", func() {
-	var allPublisher *AllPublisher
+	var allPublisher *pubsub.AllPublisher
 
 	BeforeEach(func() {
-		allPublisher = NewAllPublisher()
+		allPublisher = pubsub.NewAllPublisher()
 	})
 
 	Context("Publish", func() {

@@ -10,7 +10,7 @@ type QClient interface {
 	Notify(message Message)
 }
 
-type Publisher interface {
+type PubSub interface {
 	Publish(msg Message) bool
     Subscribe(client QClient) error
     Unsubscribe(qClient QClient)
@@ -23,19 +23,19 @@ type Message struct {
 }
 
 type GoQ struct {
-	Publisher Publisher
-	maxDepth  int
-	queue     chan Message
-	doneChan  chan bool
-	lock      sync.Mutex
+	pubsub   PubSub
+	maxDepth int
+	queue    chan Message
+	doneChan chan bool
+	lock     sync.Mutex
 }
 
-func NewGoQ(queueDepth int, publisher Publisher) *GoQ {
+func NewGoQ(queueDepth int, publisher PubSub) *GoQ {
 	return &GoQ{
 		maxDepth:    queueDepth,
 		queue:       make(chan Message, queueDepth),
 		doneChan:    make(chan bool, 1),
-		Publisher:         publisher,
+		pubsub:         publisher,
 	}
 }
 
@@ -62,7 +62,7 @@ func (q *GoQ) StartPublishing() {
 }
 
 func (q *GoQ) publishMessage(msg Message) {
-	delivered := q.Publisher.Publish(msg)
+	delivered := q.pubsub.Publish(msg)
 	if !delivered {
 		q.queue <- msg
 	}

@@ -3,14 +3,14 @@ package acceptance
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/masslessparticle/goq/pub"
 	"github.com/masslessparticle/goq"
 	"github.com/masslessparticle/goq/testhelpers"
+	"github.com/masslessparticle/goq/pubsub"
 )
 
 var _ = Describe("Notification", func() {
 	It("Notifies a subscribed client", func() {
-		publisher := pub.NewRoundRobinPublisher()
+		publisher := pubsub.NewRoundRobinPublisher()
 
 		client := testhelpers.NewTestClient("Subscription - 1")
 		publisher.Subscribe(client)

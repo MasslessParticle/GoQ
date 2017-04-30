@@ -1,4 +1,4 @@
-package pub_test
+package pubsub_test
 
 import (
 	. "github.com/onsi/ginkgo"
