@@ -6,23 +6,27 @@ import (
 	"github.com/masslessparticle/goq"
 	"github.com/masslessparticle/goq/testhelpers"
 	"github.com/masslessparticle/goq/pubsub"
+	. "github.com/onsi/ginkgo/extensions/table"
 )
 
 var _ = Describe("Notification", func() {
-	It("Notifies a subscribed client", func() {
-		publisher := pubsub.NewRoundRobinPublisher()
+	DescribeTable("Notifies the client with a publisher",
+		func(publisher goq.PubSub) {
+			client := testhelpers.NewTestClient("Subscription - 1")
+			publisher.Subscribe(client)
 
-		client := testhelpers.NewTestClient("Subscription - 1")
-		publisher.Subscribe(client)
+			queue := goq.NewGoQ(25, publisher)
 
-		queue := goq.NewGoQ(25, publisher)
+			queue.StartPublishing()
 
-		queue.StartPublishing()
+			queue.Enqueue(goq.Message{Id: "Message - 1"})
 
-		queue.Enqueue(goq.Message{Id: "Message - 1"})
-
-		message := goq.Message{}
-		Eventually(client.Notifications).Should(Receive(&message))
-		Expect(message.Id).To(Equal("Message - 1"))
-	})
+			message := goq.Message{}
+			Eventually(client.Notifications).Should(Receive(&message))
+			Expect(message.Id).To(Equal("Message - 1"))
+		},
+		Entry("round robin", pubsub.NewRoundRobinPublisher()),
+		Entry("all", pubsub.NewAllPublisher()),
+		Entry("least used", pubsub.NewLeastUsedPublisher()),
+	)
 })

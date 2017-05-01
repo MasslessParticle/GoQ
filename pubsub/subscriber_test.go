@@ -20,6 +20,7 @@ var _ = Describe("PublisherSubscriber", func() {
 		},
 		Entry("round robin", pubsub.NewRoundRobinPublisher()),
 		Entry("all the things", pubsub.NewAllPublisher()),
+		Entry("least used", pubsub.NewLeastUsedPublisher()),
 	)
 
 	DescribeTable("Publishers can unsubscribe clients",
@@ -35,5 +36,6 @@ var _ = Describe("PublisherSubscriber", func() {
 		},
 		Entry("round robin", pubsub.NewRoundRobinPublisher()),
 		Entry("all the things", pubsub.NewAllPublisher()),
+		Entry("Least Used", pubsub.NewLeastUsedPublisher()),
 	)
 })
