@@ -4,7 +4,7 @@ Package Goq provides a lightweight, extensible, in-memory message broker.
 
 `go get github.com/masslessparticle/goq`
 
-To run tests:
+Running tests:
 
 ```
 go get github.com/onsi/ginkgo
@@ -39,7 +39,7 @@ A subscriber to the message broker. QClients are called according to the strateg
 
 ## PubSub
 
-PubSub is the component that handles client subscription and message delivery GoQ provides three message delivery strategies:
+PubSub is the component that handles client subscription and message delivery. GoQ provides three message delivery strategies:
 - Deliver to all clients.
 - Round Robin.
 - Least Used.
