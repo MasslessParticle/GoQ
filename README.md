@@ -1,4 +1,4 @@
-# GoQ
+# GoQ   [![Build Status](https://travis-ci.org/MasslessParticle/GoQ.svg)](https://travis-ci.org/MasslessParticle/GoQ) [![Go Report Card](https://goreportcard.com/badge/github.com/masslessparticle/goq)](https://goreportcard.com/report/github.com/masslessparticle/goq)
 
 Package Goq provides a lightweight, extensible, in-memory message broker.
 
