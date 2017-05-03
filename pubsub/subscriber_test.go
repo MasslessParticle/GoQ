@@ -1,12 +1,12 @@
 package pubsub_test
 
 import (
-	. "github.com/onsi/ginkgo/extensions/table"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 	"github.com/masslessparticle/goq"
-	"github.com/masslessparticle/goq/testhelpers"
 	"github.com/masslessparticle/goq/pubsub"
+	"github.com/masslessparticle/goq/testhelpers"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("PublisherSubscriber", func() {

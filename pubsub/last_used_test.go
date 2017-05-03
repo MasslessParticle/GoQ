@@ -3,10 +3,10 @@ package pubsub_test
 import (
 	. "github.com/masslessparticle/goq/pubsub"
 
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 	"github.com/masslessparticle/goq"
 	"github.com/masslessparticle/goq/testhelpers"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("LastUsed", func() {

@@ -33,8 +33,8 @@ type TestPublisher struct {
 
 func NewTestPublisher() *TestPublisher {
 	return &TestPublisher{
-		Responses:   make(chan bool, 1000),
-		Messages:    make(chan goq.Message, 1000),
+		Responses: make(chan bool, 1000),
+		Messages:  make(chan goq.Message, 1000),
 	}
 }
 

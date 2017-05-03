@@ -6,7 +6,7 @@ import (
 
 type RoundRobinPublisher struct {
 	SubscriberList
-	nextNotified   int
+	nextNotified int
 }
 
 func NewRoundRobinPublisher() *RoundRobinPublisher {

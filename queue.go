@@ -12,8 +12,8 @@ type QClient interface {
 
 type PubSub interface {
 	Publish(msg Message) bool
-    Subscribe(client QClient) error
-    Unsubscribe(qClient QClient)
+	Subscribe(client QClient) error
+	Unsubscribe(qClient QClient)
 	SubscriberCount() int
 }
 
@@ -32,10 +32,10 @@ type GoQ struct {
 
 func NewGoQ(queueDepth int, publisher PubSub) *GoQ {
 	return &GoQ{
-		maxDepth:    queueDepth,
-		queue:       make(chan Message, queueDepth),
-		doneChan:    make(chan bool, 1),
-		pubsub:         publisher,
+		maxDepth: queueDepth,
+		queue:    make(chan Message, queueDepth),
+		doneChan: make(chan bool, 1),
+		pubsub:   publisher,
 	}
 }
 

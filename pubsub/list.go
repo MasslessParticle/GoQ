@@ -2,8 +2,8 @@ package pubsub
 
 import (
 	"errors"
-	"sync"
 	"github.com/masslessparticle/goq"
+	"sync"
 )
 
 type SubscriberList struct {

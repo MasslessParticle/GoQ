@@ -1,10 +1,10 @@
 package pubsub
 
 import (
-	"github.com/masslessparticle/goq"
-	"sync"
 	"errors"
+	"github.com/masslessparticle/goq"
 	"math"
+	"sync"
 )
 
 type PQEntry struct {
@@ -13,14 +13,14 @@ type PQEntry struct {
 }
 
 type SubscriberPriorityQueue struct {
-	lock sync.RWMutex
-	items []PQEntry
+	lock              sync.RWMutex
+	items             []PQEntry
 	subscribedClients map[string]bool
 }
 
 func NewSubscriberPriorityQueue() *SubscriberPriorityQueue {
 	return &SubscriberPriorityQueue{
-		items: make([]PQEntry, 1),
+		items:             make([]PQEntry, 1),
 		subscribedClients: make(map[string]bool, 0),
 	}
 }
@@ -75,7 +75,7 @@ func (s *SubscriberPriorityQueue) Unsubscribe(client goq.QClient) {
 	subIndex := s.indexOf(client.Id())
 	if subIndex >= 0 {
 		item := s.items[subIndex]
-		s.swap(subIndex, len(s.items) - 1)
+		s.swap(subIndex, len(s.items)-1)
 		s.items = s.items[:len(s.items)-1]
 
 		if subIndex != len(s.items) {
@@ -104,7 +104,7 @@ func (s *SubscriberPriorityQueue) indexOf(qClientId string) int {
 }
 
 func (s *SubscriberPriorityQueue) bubbleUp(clientIndex int) {
-	for i := clientIndex; i > 0; i = i / 2  {
+	for i := clientIndex; i > 0; i = i / 2 {
 		s.swapIfSmallerParent(i/2, i)
 	}
 }
@@ -141,7 +141,7 @@ func (s *SubscriberPriorityQueue) bubbleDown(clientIndex int) {
 
 func (s *SubscriberPriorityQueue) swapIfLargerChild(nodeIndex int) int {
 	lChild := nodeIndex * 2
-	rChild := nodeIndex * 2 + 1
+	rChild := nodeIndex*2 + 1
 
 	if lChild >= len(s.items) && rChild >= len(s.items) {
 		return nodeIndex

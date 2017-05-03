@@ -17,7 +17,7 @@ func (rr *AllPublisher) Publish(msg goq.Message) bool {
 	numSubScribers := rr.SubscriberCount()
 	delivered := false
 
-	for i:= 0; i < numSubScribers; i++ {
+	for i := 0; i < numSubScribers; i++ {
 		rr.Get(i).Notify(msg)
 		delivered = true
 	}

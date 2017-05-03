@@ -1,10 +1,10 @@
 package pubsub_test
 
 import (
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 	"github.com/masslessparticle/goq/pubsub"
 	"github.com/masslessparticle/goq/testhelpers"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("PriorityQueue", func() {
@@ -14,7 +14,7 @@ var _ = Describe("PriorityQueue", func() {
 		pq = pubsub.NewSubscriberPriorityQueue()
 	})
 
-	Context("Subscribe", func () {
+	Context("Subscribe", func() {
 		It("thows an error with duplicate client ids", func() {
 			err := pq.Subscribe(testhelpers.NewTestClient("subscriber - 1"))
 			Expect(err).ToNot(HaveOccurred())
@@ -27,10 +27,10 @@ var _ = Describe("PriorityQueue", func() {
 			Expect(pq.SubscriberCount()).To(Equal(1))
 		})
 
-		It("moves new subscribers to the top of the queue", func () {
+		It("moves new subscribers to the top of the queue", func() {
 			entry := pubsub.PQEntry{
 				MessagesSent: 3,
-				Client: testhelpers.NewTestClient("subscriber - 1"),
+				Client:       testhelpers.NewTestClient("subscriber - 1"),
 			}
 
 			err := pq.Push(entry)
@@ -47,7 +47,7 @@ var _ = Describe("PriorityQueue", func() {
 		It("can't push duplicate clients", func() {
 			entry := pubsub.PQEntry{
 				MessagesSent: 2,
-				Client: testhelpers.NewTestClient("subscriber - 1"),
+				Client:       testhelpers.NewTestClient("subscriber - 1"),
 			}
 
 			err := pq.Push(entry)
@@ -64,7 +64,7 @@ var _ = Describe("PriorityQueue", func() {
 		It("allows adding elements with message counts", func() {
 			entry := pubsub.PQEntry{
 				MessagesSent: 2,
-				Client: testhelpers.NewTestClient("subscriber - 1"),
+				Client:       testhelpers.NewTestClient("subscriber - 1"),
 			}
 
 			pq.Push(entry)
@@ -76,19 +76,18 @@ var _ = Describe("PriorityQueue", func() {
 		It("Returns the element with the lowest message calls", func() {
 			entry := pubsub.PQEntry{
 				MessagesSent: 4,
-				Client: testhelpers.NewTestClient("subscriber - 1"),
+				Client:       testhelpers.NewTestClient("subscriber - 1"),
 			}
 
 			entry2 := pubsub.PQEntry{
 				MessagesSent: 3,
-				Client: testhelpers.NewTestClient("subscriber - 2"),
+				Client:       testhelpers.NewTestClient("subscriber - 2"),
 			}
 
 			entry3 := pubsub.PQEntry{
 				MessagesSent: 2,
-				Client: testhelpers.NewTestClient("subscriber - 3"),
+				Client:       testhelpers.NewTestClient("subscriber - 3"),
 			}
-
 
 			err := pq.Push(entry)
 			Expect(err).ToNot(HaveOccurred())
@@ -101,28 +100,27 @@ var _ = Describe("PriorityQueue", func() {
 		})
 	})
 
-	Context("Pop" , func() {
+	Context("Pop", func() {
 		It("returns the entry with lowest message calls and deletes it the queue remains prioritized", func() {
 			entry := pubsub.PQEntry{
 				MessagesSent: 4,
-				Client: testhelpers.NewTestClient("subscriber - 1"),
+				Client:       testhelpers.NewTestClient("subscriber - 1"),
 			}
 
 			entry2 := pubsub.PQEntry{
 				MessagesSent: 3,
-				Client: testhelpers.NewTestClient("subscriber - 2"),
+				Client:       testhelpers.NewTestClient("subscriber - 2"),
 			}
 
 			entry3 := pubsub.PQEntry{
 				MessagesSent: 2,
-				Client: testhelpers.NewTestClient("subscriber - 3"),
+				Client:       testhelpers.NewTestClient("subscriber - 3"),
 			}
 
 			entry4 := pubsub.PQEntry{
 				MessagesSent: 6,
-				Client: testhelpers.NewTestClient("subscriber - 4"),
+				Client:       testhelpers.NewTestClient("subscriber - 4"),
 			}
-
 
 			err := pq.Push(entry)
 			Expect(err).ToNot(HaveOccurred())
@@ -144,24 +142,23 @@ var _ = Describe("PriorityQueue", func() {
 
 			entry := pubsub.PQEntry{
 				MessagesSent: 4,
-				Client: deleteClient,
+				Client:       deleteClient,
 			}
 
 			entry2 := pubsub.PQEntry{
 				MessagesSent: 3,
-				Client: testhelpers.NewTestClient("subscriber - 2"),
+				Client:       testhelpers.NewTestClient("subscriber - 2"),
 			}
 
 			entry3 := pubsub.PQEntry{
 				MessagesSent: 2,
-				Client: testhelpers.NewTestClient("subscriber - 3"),
+				Client:       testhelpers.NewTestClient("subscriber - 3"),
 			}
 
 			entry4 := pubsub.PQEntry{
 				MessagesSent: 6,
-				Client: testhelpers.NewTestClient("subscriber - 4"),
+				Client:       testhelpers.NewTestClient("subscriber - 4"),
 			}
-
 
 			err := pq.Push(entry)
 			Expect(err).ToNot(HaveOccurred())
@@ -184,12 +181,12 @@ var _ = Describe("PriorityQueue", func() {
 
 			entry := pubsub.PQEntry{
 				MessagesSent: 4,
-				Client: deleteClient,
+				Client:       deleteClient,
 			}
 
 			entry2 := pubsub.PQEntry{
 				MessagesSent: 3,
-				Client: testhelpers.NewTestClient("subscriber - 2"),
+				Client:       testhelpers.NewTestClient("subscriber - 2"),
 			}
 
 			err := pq.Push(entry)
