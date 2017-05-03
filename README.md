@@ -9,6 +9,7 @@ Running tests:
 ```
 go get github.com/onsi/ginkgo
 go get github.com/onsi/gomega
+go install github.com/onsi/ginkgo/ginkgo
 
 ginkgo -r
 ```
