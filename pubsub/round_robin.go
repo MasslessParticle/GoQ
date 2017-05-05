@@ -30,3 +30,5 @@ func (rr *RoundRobinPublisher) Publish(msg goq.Message) bool {
 
 	return true
 }
+
+func (rr *RoundRobinPublisher) Done() {}

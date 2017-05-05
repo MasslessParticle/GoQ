@@ -41,9 +41,48 @@ var _ = Describe("Queue", func() {
 			})
 			Expect(err).To(HaveOccurred())
 		})
+
+		It("Returns an error when a message is sent to a done queue", func() {
+			publisher := testhelpers.NewTestPublisher()
+			publisher.Responses <- true
+
+			queue := NewGoQ(25, publisher)
+			queue.StartPublishing()
+
+			queue.Enqueue(Message{Id: "MessageId - 1"})
+
+			recievedMessage := Message{}
+			Eventually(publisher.Messages).Should(Receive(&recievedMessage))
+			Expect(recievedMessage.Id).To(Equal("MessageId - 1"))
+
+			queue.StopPublishing()
+
+			err := queue.Enqueue(Message{Id: "MessageId - 2"})
+			Expect(err).To(HaveOccurred())
+		})
+
+
 	})
 
 	Context("Notifications", func() {
+		It("passes to the pubsub whether or not the channel is done", func () {
+			publisher := testhelpers.NewTestPublisher()
+			publisher.Responses <- true
+
+			queue := NewGoQ(25, publisher)
+			queue.StartPublishing()
+
+			queue.Enqueue(Message{Id: "MessageId - 1"})
+
+			recievedMessage := Message{}
+			Eventually(publisher.Messages).Should(Receive(&recievedMessage))
+			Expect(recievedMessage.Id).To(Equal("MessageId - 1"))
+
+			queue.StopPublishing()
+
+			Eventually(publisher.DoneCalls).Should(Receive(Equal(true)))
+		})
+
 		It("sends the message to the publisher", func() {
 			publisher := testhelpers.NewTestPublisher()
 			publisher.Responses <- true
@@ -74,7 +113,7 @@ var _ = Describe("Queue", func() {
 			Eventually(publisher.Messages).Should(Receive(&recievedMessage))
 			Expect(recievedMessage.Id).To(Equal("MessageId - 1"))
 
-			queue.StopPublishing()
+			queue.PausePublishing()
 
 			queue.Enqueue(Message{Id: "MessageId - 2"})
 			Consistently(publisher.Messages).ShouldNot(Receive())

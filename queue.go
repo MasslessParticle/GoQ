@@ -11,6 +11,7 @@ type QClient interface {
 }
 
 type PubSub interface {
+	Done()
 	Publish(msg Message) bool
 	Subscribe(client QClient) error
 	Unsubscribe(qClient QClient)
@@ -19,27 +20,32 @@ type PubSub interface {
 
 type Message struct {
 	Id      string
-	Payload string
+	Payload interface{}
 }
 
 type GoQ struct {
-	pubsub   PubSub
-	maxDepth int
-	queue    chan Message
-	doneChan chan bool
-	lock     sync.Mutex
+	pubsub    PubSub
+	maxDepth  int
+	queue     chan Message
+	pauseChan chan bool
+	lock      sync.Mutex
+	done bool
 }
 
 func NewGoQ(queueDepth int, publisher PubSub) *GoQ {
 	return &GoQ{
-		maxDepth: queueDepth,
-		queue:    make(chan Message, queueDepth),
-		doneChan: make(chan bool, 1),
-		pubsub:   publisher,
+		maxDepth:  queueDepth,
+		queue:     make(chan Message, queueDepth),
+		pauseChan: make(chan bool, 1),
+		pubsub:    publisher,
 	}
 }
 
 func (q *GoQ) Enqueue(message Message) error {
+	if q.done {
+		return errors.New("Queue closed")
+	}
+
 	if len(q.queue) < q.maxDepth {
 		q.queue <- message
 		return nil
@@ -50,15 +56,29 @@ func (q *GoQ) Enqueue(message Message) error {
 
 func (q *GoQ) StartPublishing() {
 	go func() {
-		for msg := range q.queue {
-			select {
-			case <-q.doneChan:
+		for {
+			msg, ok := <- q.queue
+			if ok {
+				select {
+				case <-q.pauseChan:
+					return
+				default:
+					q.publishMessage(msg)
+				}
+			} else {
+				q.pubsub.Done()
 				return
-			default:
-				q.publishMessage(msg)
 			}
 		}
 	}()
+}
+
+func (q *GoQ) StopPublishing() {
+	q.lock.Lock()
+	defer q.lock.Unlock()
+
+	close(q.queue)
+	q.done = true
 }
 
 func (q *GoQ) publishMessage(msg Message) {
@@ -68,6 +88,6 @@ func (q *GoQ) publishMessage(msg Message) {
 	}
 }
 
-func (q *GoQ) StopPublishing() {
-	q.doneChan <- true
+func (q *GoQ) PausePublishing() {
+	q.pauseChan <- true
 }

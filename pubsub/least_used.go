@@ -13,16 +13,18 @@ func NewLeastUsedPublisher() *LeastUsedPublisher {
 	return &publisher
 }
 
-func (p *LeastUsedPublisher) Publish(msg goq.Message) bool {
-	numSubscribers := p.SubscriberCount()
+func (pq *LeastUsedPublisher) Publish(msg goq.Message) bool {
+	numSubscribers := pq.SubscriberCount()
 	if numSubscribers > 0 {
-		entry := p.Pop()
+		entry := pq.Pop()
 		entry.Client.Notify(msg)
 		entry.MessagesSent = entry.MessagesSent + 1
-		p.Push(entry)
+		pq.Push(entry)
 
 		return true
 	} else {
 		return false
 	}
 }
+
+func (pq *LeastUsedPublisher) Done() {}

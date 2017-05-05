@@ -28,6 +28,7 @@ func (qc TestClient) Notify(message goq.Message) {
 type TestPublisher struct {
 	Responses   chan bool
 	Messages    chan goq.Message
+	DoneCalls   chan bool
 	Subscribers chan *pubsub.SubscriberList
 }
 
@@ -35,6 +36,7 @@ func NewTestPublisher() *TestPublisher {
 	return &TestPublisher{
 		Responses: make(chan bool, 1000),
 		Messages:  make(chan goq.Message, 1000),
+		DoneCalls: make(chan bool, 1000),
 	}
 }
 
@@ -46,6 +48,10 @@ func (tp *TestPublisher) Publish(msg goq.Message) bool {
 	}
 
 	return <-tp.Responses
+}
+
+func (tp *TestPublisher) Done() {
+	tp.DoneCalls <- true
 }
 
 func (tp *TestPublisher) Subscribe(client goq.QClient) error {

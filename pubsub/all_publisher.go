@@ -13,14 +13,16 @@ func NewAllPublisher() *AllPublisher {
 	return &publisher
 }
 
-func (rr *AllPublisher) Publish(msg goq.Message) bool {
-	numSubScribers := rr.SubscriberCount()
+func (ap *AllPublisher) Publish(msg goq.Message) bool {
+	numSubScribers := ap.SubscriberCount()
 	delivered := false
 
 	for i := 0; i < numSubScribers; i++ {
-		rr.Get(i).Notify(msg)
+		ap.Get(i).Notify(msg)
 		delivered = true
 	}
 
 	return delivered
 }
+
+func (ap *AllPublisher) Done() {}
