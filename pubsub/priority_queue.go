@@ -13,7 +13,7 @@ type PQEntry struct {
 }
 
 type SubscriberPriorityQueue struct {
-	lock              sync.RWMutex
+	lock              sync.Mutex
 	items             []PQEntry
 	subscribedClients map[string]bool
 }
