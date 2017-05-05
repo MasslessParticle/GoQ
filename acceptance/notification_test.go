@@ -19,11 +19,11 @@ var _ = Describe("Notification", func() {
 
 			queue.StartPublishing()
 
-			queue.Enqueue(goq.Message{Id: "Message - 1"})
+			queue.Enqueue(goq.Message{ID: "Message - 1"})
 
 			message := goq.Message{}
 			Eventually(client.Notifications).Should(Receive(&message))
-			Expect(message.Id).To(Equal("Message - 1"))
+			Expect(message.ID).To(Equal("Message - 1"))
 		},
 		Entry("round robin", pubsub.NewRoundRobinPublisher()),
 		Entry("all", pubsub.NewAllPublisher()),

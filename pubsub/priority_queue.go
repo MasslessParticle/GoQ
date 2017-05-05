@@ -2,9 +2,10 @@ package pubsub
 
 import (
 	"errors"
-	"github.com/masslessparticle/goq"
 	"math"
 	"sync"
+
+	"github.com/masslessparticle/goq"
 )
 
 type PQEntry struct {
@@ -29,14 +30,14 @@ func (s *SubscriberPriorityQueue) Push(entry PQEntry) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	_, hasKey := s.subscribedClients[entry.Client.Id()]
+	_, hasKey := s.subscribedClients[entry.Client.ID()]
 	if hasKey {
 		return errors.New("Duplicate client ids aren't allowed")
 	}
 
 	s.items = append(s.items, entry)
 	s.bubbleUp(len(s.items) - 1)
-	s.subscribedClients[entry.Client.Id()] = true
+	s.subscribedClients[entry.Client.ID()] = true
 
 	return nil
 }
@@ -59,7 +60,7 @@ func (s *SubscriberPriorityQueue) Pop() PQEntry {
 
 	s.bubbleDown(1)
 
-	delete(s.subscribedClients, item.Client.Id())
+	delete(s.subscribedClients, item.Client.ID())
 
 	return item
 }
@@ -72,7 +73,7 @@ func (s *SubscriberPriorityQueue) Unsubscribe(client goq.QClient) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	subIndex := s.indexOf(client.Id())
+	subIndex := s.indexOf(client.ID())
 	if subIndex >= 0 {
 		item := s.items[subIndex]
 		s.swap(subIndex, len(s.items)-1)
@@ -83,7 +84,7 @@ func (s *SubscriberPriorityQueue) Unsubscribe(client goq.QClient) {
 			s.bubbleUp(subIndex)
 		}
 
-		delete(s.subscribedClients, item.Client.Id())
+		delete(s.subscribedClients, item.Client.ID())
 	}
 }
 
@@ -94,9 +95,9 @@ func (s *SubscriberPriorityQueue) SubscriberCount() int {
 	return len(s.items) - 1
 }
 
-func (s *SubscriberPriorityQueue) indexOf(qClientId string) int {
+func (s *SubscriberPriorityQueue) indexOf(qClientID string) int {
 	for i := 1; i < len(s.items); i++ {
-		if s.items[i].Client.Id() == qClientId {
+		if s.items[i].Client.ID() == qClientID {
 			return i
 		}
 	}
@@ -164,10 +165,9 @@ func (s *SubscriberPriorityQueue) swapIfLargerChild(nodeIndex int) int {
 		if minMessages == lMessages {
 			s.swap(lChild, nodeIndex)
 			return lChild
-		} else {
-			s.swap(rChild, nodeIndex)
-			return rChild
 		}
+		s.swap(rChild, nodeIndex)
+		return rChild
 	}
 
 	return nodeIndex

@@ -17,7 +17,7 @@ var _ = Describe("RoundRobin", func() {
 
 	Context("Publish", func() {
 		It("doesn't deliver the message when there aren't subscribers", func() {
-			delivered := roundRobin.Publish(goq.Message{Id: "Message - 1"})
+			delivered := roundRobin.Publish(goq.Message{ID: "Message - 1"})
 			Expect(delivered).To(BeFalse())
 		})
 
@@ -30,30 +30,30 @@ var _ = Describe("RoundRobin", func() {
 			roundRobin.Subscribe(subscriber2)
 			roundRobin.Subscribe(subscriber3)
 
-			delivered := roundRobin.Publish(goq.Message{Id: "Message - 1"})
+			delivered := roundRobin.Publish(goq.Message{ID: "Message - 1"})
 			Expect(delivered).To(BeTrue())
 
-			delivered = roundRobin.Publish(goq.Message{Id: "Message - 2"})
+			delivered = roundRobin.Publish(goq.Message{ID: "Message - 2"})
 			Expect(delivered).To(BeTrue())
 
-			delivered = roundRobin.Publish(goq.Message{Id: "Message - 3"})
+			delivered = roundRobin.Publish(goq.Message{ID: "Message - 3"})
 			Expect(delivered).To(BeTrue())
 
-			delivered = roundRobin.Publish(goq.Message{Id: "Message - 4"})
+			delivered = roundRobin.Publish(goq.Message{ID: "Message - 4"})
 			Expect(delivered).To(BeTrue())
 
 			message := goq.Message{}
 			Eventually(subscriber.Notifications).Should(Receive(&message))
-			Expect(message.Id).To(Equal("Message - 1"))
+			Expect(message.ID).To(Equal("Message - 1"))
 
 			Eventually(subscriber2.Notifications).Should(Receive(&message))
-			Expect(message.Id).To(Equal("Message - 2"))
+			Expect(message.ID).To(Equal("Message - 2"))
 
 			Eventually(subscriber3.Notifications).Should(Receive(&message))
-			Expect(message.Id).To(Equal("Message - 3"))
+			Expect(message.ID).To(Equal("Message - 3"))
 
 			Eventually(subscriber.Notifications).Should(Receive(&message))
-			Expect(message.Id).To(Equal("Message - 4"))
+			Expect(message.ID).To(Equal("Message - 4"))
 		})
 
 		It("doesn't send messages to removed subscribers", func() {
@@ -65,20 +65,20 @@ var _ = Describe("RoundRobin", func() {
 			roundRobin.Subscribe(subscriber2)
 			roundRobin.Subscribe(subscriber3)
 
-			delivered := roundRobin.Publish(goq.Message{Id: "Message - 1"})
+			delivered := roundRobin.Publish(goq.Message{ID: "Message - 1"})
 			Expect(delivered).To(BeTrue())
 
 			roundRobin.Unsubscribe(subscriber2)
 
-			delivered = roundRobin.Publish(goq.Message{Id: "Message - 2"})
+			delivered = roundRobin.Publish(goq.Message{ID: "Message - 2"})
 			Expect(delivered).To(BeTrue())
 
 			message := goq.Message{}
 			Eventually(subscriber.Notifications).Should(Receive(&message))
-			Expect(message.Id).To(Equal("Message - 1"))
+			Expect(message.ID).To(Equal("Message - 1"))
 
 			Eventually(subscriber3.Notifications).Should(Receive(&message))
-			Expect(message.Id).To(Equal("Message - 2"))
+			Expect(message.ID).To(Equal("Message - 2"))
 
 			Consistently(subscriber2.Notifications).ShouldNot(Receive())
 		})
@@ -91,26 +91,26 @@ var _ = Describe("RoundRobin", func() {
 			roundRobin.Subscribe(subscriber)
 			roundRobin.Subscribe(subscriber2)
 
-			delivered := roundRobin.Publish(goq.Message{Id: "Message - 1"})
+			delivered := roundRobin.Publish(goq.Message{ID: "Message - 1"})
 			Expect(delivered).To(BeTrue())
 
-			delivered = roundRobin.Publish(goq.Message{Id: "Message - 2"})
+			delivered = roundRobin.Publish(goq.Message{ID: "Message - 2"})
 			Expect(delivered).To(BeTrue())
 
 			message := goq.Message{}
 			Eventually(subscriber.Notifications).Should(Receive(&message))
-			Expect(message.Id).To(Equal("Message - 1"))
+			Expect(message.ID).To(Equal("Message - 1"))
 
 			Eventually(subscriber2.Notifications).Should(Receive(&message))
-			Expect(message.Id).To(Equal("Message - 2"))
+			Expect(message.ID).To(Equal("Message - 2"))
 
 			roundRobin.Subscribe(subscriber3)
 
-			delivered = roundRobin.Publish(goq.Message{Id: "Message - 3"})
+			delivered = roundRobin.Publish(goq.Message{ID: "Message - 3"})
 			Expect(delivered).To(BeTrue())
 
 			Eventually(subscriber3.Notifications).Should(Receive(&message))
-			Expect(message.Id).To(Equal("Message - 3"))
+			Expect(message.ID).To(Equal("Message - 3"))
 		})
 	})
 })
