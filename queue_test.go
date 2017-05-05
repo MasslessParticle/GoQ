@@ -60,8 +60,6 @@ var _ = Describe("Queue", func() {
 			err := queue.Enqueue(Message{Id: "MessageId - 2"})
 			Expect(err).To(HaveOccurred())
 		})
-
-
 	})
 
 	Context("Notifications", func() {

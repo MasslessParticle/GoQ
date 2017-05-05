@@ -46,12 +46,12 @@ func (q *GoQ) Enqueue(message Message) error {
 		return errors.New("Queue closed")
 	}
 
-	if len(q.queue) < q.maxDepth {
-		q.queue <- message
+	select {
+	case q.queue <- message:
 		return nil
+	default:
+		return errors.New("Message rejected, max queue depth reached")
 	}
-
-	return errors.New("Message rejected, max queue depth reached")
 }
 
 func (q *GoQ) StartPublishing() {
