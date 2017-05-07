@@ -21,7 +21,7 @@ var _ = Describe("Queue", func() {
 		It("can enqueue a message", func() {
 			queue := NewGoQ(25, publisher)
 			err := queue.Enqueue(Message{
-				Id:      "1",
+				ID:      "1",
 				Payload: "The Message",
 			})
 			Expect(err).ToNot(HaveOccurred())
@@ -30,13 +30,13 @@ var _ = Describe("Queue", func() {
 		It("throws an error when the queuedepth is exceeded", func() {
 			queue := NewGoQ(1, publisher)
 			err := queue.Enqueue(Message{
-				Id:      "1",
+				ID:      "1",
 				Payload: "The Message",
 			})
 			Expect(err).ToNot(HaveOccurred())
 
 			err = queue.Enqueue(Message{
-				Id:      "2",
+				ID:      "2",
 				Payload: "Another Message",
 			})
 			Expect(err).To(HaveOccurred())
@@ -89,7 +89,7 @@ var _ = Describe("Queue", func() {
 			queue.StartPublishing()
 
 			queue.Enqueue(Message{
-				Id:      "MessageId - 1",
+				ID:      "MessageId - 1",
 				Payload: "This is the message",
 			})
 
@@ -105,15 +105,15 @@ var _ = Describe("Queue", func() {
 			queue := NewGoQ(25, publisher)
 			queue.StartPublishing()
 
-			queue.Enqueue(Message{Id: "MessageId - 1"})
+			queue.Enqueue(Message{ID: "MessageId - 1"})
 
 			recievedMessage := Message{}
 			Eventually(publisher.Messages).Should(Receive(&recievedMessage))
-			Expect(recievedMessage.Id).To(Equal("MessageId - 1"))
+			Expect(recievedMessage.ID).To(Equal("MessageId - 1"))
 
 			queue.PausePublishing()
 
-			queue.Enqueue(Message{Id: "MessageId - 2"})
+			queue.Enqueue(Message{ID: "MessageId - 2"})
 			Consistently(publisher.Messages).ShouldNot(Receive())
 		})
 
@@ -125,7 +125,7 @@ var _ = Describe("Queue", func() {
 			queue := NewGoQ(25, publisher)
 			queue.StartPublishing()
 
-			queue.Enqueue(Message{Id: "MessageId - 1"})
+			queue.Enqueue(Message{ID: "MessageId - 1"})
 
 			Eventually(func() int {
 				return len(publisher.Messages)

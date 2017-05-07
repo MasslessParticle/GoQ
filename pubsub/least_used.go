@@ -22,9 +22,8 @@ func (pq *LeastUsedPublisher) Publish(msg goq.Message) bool {
 		pq.Push(entry)
 
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 func (pq *LeastUsedPublisher) Done() {}

@@ -6,19 +6,19 @@ import (
 )
 
 type TestClient struct {
-	ClientId      string
+	ClientID      string
 	Notifications chan goq.Message
 }
 
 func NewTestClient(id string) TestClient {
 	return TestClient{
-		ClientId:      id,
+		ClientID:      id,
 		Notifications: make(chan goq.Message, 1000),
 	}
 }
 
-func (qc TestClient) Id() string {
-	return qc.ClientId
+func (qc TestClient) ID() string {
+	return qc.ClientID
 }
 
 func (qc TestClient) Notify(message goq.Message) {

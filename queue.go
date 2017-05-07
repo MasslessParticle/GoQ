@@ -6,7 +6,7 @@ import (
 )
 
 type QClient interface {
-	Id() string
+	ID() string
 	Notify(message Message)
 }
 
@@ -19,8 +19,8 @@ type PubSub interface {
 }
 
 type Message struct {
-	Id      string
-	Payload interface{}
+	ID      string
+	Payload string
 }
 
 type GoQ struct {
@@ -29,7 +29,7 @@ type GoQ struct {
 	queue     chan Message
 	pauseChan chan bool
 	lock      sync.Mutex
-	done bool
+	done      bool
 }
 
 func NewGoQ(queueDepth int, publisher PubSub) *GoQ {
@@ -57,7 +57,7 @@ func (q *GoQ) Enqueue(message Message) error {
 func (q *GoQ) StartPublishing() {
 	go func() {
 		for {
-			msg, ok := <- q.queue
+			msg, ok := <-q.queue
 			if ok {
 				select {
 				case <-q.pauseChan:

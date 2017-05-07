@@ -39,7 +39,7 @@ var _ = Describe("PriorityQueue", func() {
 			err = pq.Subscribe(testhelpers.NewTestClient("subscriber - 2"))
 			Expect(err).ToNot(HaveOccurred())
 
-			Expect(pq.Peek().Client.Id()).To(Equal("subscriber - 2"))
+			Expect(pq.Peek().Client.ID()).To(Equal("subscriber - 2"))
 		})
 	})
 
@@ -96,7 +96,7 @@ var _ = Describe("PriorityQueue", func() {
 			err = pq.Push(entry3)
 			Expect(err).ToNot(HaveOccurred())
 
-			Expect(pq.Peek().Client.Id()).To(Equal("subscriber - 3"))
+			Expect(pq.Peek().Client.ID()).To(Equal("subscriber - 3"))
 		})
 	})
 
@@ -131,8 +131,8 @@ var _ = Describe("PriorityQueue", func() {
 			err = pq.Push(entry4)
 			Expect(err).ToNot(HaveOccurred())
 
-			Expect(pq.Pop().Client.Id()).To(Equal("subscriber - 3"))
-			Expect(pq.Peek().Client.Id()).To(Equal("subscriber - 2"))
+			Expect(pq.Pop().Client.ID()).To(Equal("subscriber - 3"))
+			Expect(pq.Peek().Client.ID()).To(Equal("subscriber - 2"))
 		})
 	})
 
@@ -171,9 +171,9 @@ var _ = Describe("PriorityQueue", func() {
 
 			pq.Unsubscribe(deleteClient)
 
-			Expect(pq.Pop().Client.Id()).To(Equal("subscriber - 3"))
-			Expect(pq.Pop().Client.Id()).To(Equal("subscriber - 2"))
-			Expect(pq.Pop().Client.Id()).To(Equal("subscriber - 4"))
+			Expect(pq.Pop().Client.ID()).To(Equal("subscriber - 3"))
+			Expect(pq.Pop().Client.ID()).To(Equal("subscriber - 2"))
+			Expect(pq.Pop().Client.ID()).To(Equal("subscriber - 4"))
 		})
 
 		It("maintains the queue when something is removed from the middle", func() {
@@ -196,7 +196,7 @@ var _ = Describe("PriorityQueue", func() {
 
 			pq.Unsubscribe(deleteClient)
 
-			Expect(pq.Pop().Client.Id()).To(Equal("subscriber - 2"))
+			Expect(pq.Pop().Client.ID()).To(Equal("subscriber - 2"))
 		})
 	})
 })
