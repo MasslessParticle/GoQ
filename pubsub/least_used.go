@@ -4,6 +4,7 @@ import "github.com/masslessparticle/goq"
 
 type LeastUsedPublisher struct {
 	SubscriberPriorityQueue
+	EmptyDone
 }
 
 func NewLeastUsedPublisher() *LeastUsedPublisher {
@@ -26,5 +27,3 @@ func (pq *LeastUsedPublisher) Publish(msg goq.Message) bool {
 		return false
 	}
 }
-
-func (pq *LeastUsedPublisher) Done() {}

@@ -7,7 +7,7 @@ import (
 
 type QClient interface {
 	Id() string
-	Notify(message Message)
+	Notify(message Message) error
 }
 
 type PubSub interface {

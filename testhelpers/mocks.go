@@ -8,21 +8,23 @@ import (
 type TestClient struct {
 	ClientId      string
 	Notifications chan goq.Message
+	Errors        chan error
 }
 
-func NewTestClient(id string) TestClient {
-	return TestClient{
+func NewTestClient(id string) *TestClient {
+	return &TestClient{
 		ClientId:      id,
 		Notifications: make(chan goq.Message, 1000),
 	}
 }
 
-func (qc TestClient) Id() string {
+func (qc *TestClient) Id() string {
 	return qc.ClientId
 }
 
-func (qc TestClient) Notify(message goq.Message) {
+func (qc *TestClient) Notify(message goq.Message) error {
 	qc.Notifications <- message
+	return nil
 }
 
 type TestPublisher struct {

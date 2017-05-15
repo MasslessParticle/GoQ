@@ -4,6 +4,7 @@ import "github.com/masslessparticle/goq"
 
 type AllPublisher struct {
 	SubscriberList
+	EmptyDone
 }
 
 func NewAllPublisher() *AllPublisher {
@@ -24,5 +25,3 @@ func (ap *AllPublisher) Publish(msg goq.Message) bool {
 
 	return delivered
 }
-
-func (ap *AllPublisher) Done() {}

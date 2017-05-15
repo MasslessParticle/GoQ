@@ -6,6 +6,7 @@ import (
 
 type RoundRobinPublisher struct {
 	SubscriberList
+	EmptyDone
 	nextNotified int
 }
 
@@ -30,5 +31,3 @@ func (rr *RoundRobinPublisher) Publish(msg goq.Message) bool {
 
 	return true
 }
-
-func (rr *RoundRobinPublisher) Done() {}
