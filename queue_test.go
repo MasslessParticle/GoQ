@@ -63,7 +63,7 @@ var _ = Describe("Queue", func() {
 	})
 
 	Context("Notifications", func() {
-		It("passes to the pubsub whether or not the channel is done", func () {
+		It("passes to the pubsub whether or not the channel is done", func() {
 			publisher := testhelpers.NewTestPublisher()
 			publisher.Responses <- true
 
