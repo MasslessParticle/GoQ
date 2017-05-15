@@ -18,7 +18,7 @@ ginkgo -r
 ```go
 client := testhelpers.NewTestClient("Subscription - 1")
 
-pubsub.NewRoundRobinPublisher()
+publisher := pubsub.NewRoundRobinPublisher()
 publisher.Subscribe(client)
 
 queue := goq.NewGoQ(25, publisher)
@@ -36,7 +36,14 @@ queue := goq.NewGoQ(25, pubsub)
 
 ## QClient
 
-A subscriber to the message broker. QClients are called according to the strategy provided by the PubSub.
+A subscriber to the message broker. QClients are called according to the strategy provided by the PubSub. A QClient is anything implementing `goq.QClient`:
+
+```go
+type QClient interface {
+	Id() string
+	Notify(message Message) error
+}
+```
 
 ## PubSub
 
@@ -49,6 +56,7 @@ Anything implementing the `goq.PubSub` interface can be a PubSub:
 
 ```go
 type PubSub interface {
+	Done()
 	Publish(msg Message) bool
 	Subscribe(client QClient) error
 	Unsubscribe(qClient QClient)
