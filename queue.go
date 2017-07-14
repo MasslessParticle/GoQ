@@ -28,7 +28,7 @@ type GoQ struct {
 	maxDepth  int
 	queue     chan Message
 	pauseChan chan bool
-	lock      sync.Mutex
+	once      sync.Once
 	done      bool
 }
 
@@ -74,11 +74,10 @@ func (q *GoQ) StartPublishing() {
 }
 
 func (q *GoQ) StopPublishing() {
-	q.lock.Lock()
-	defer q.lock.Unlock()
-
-	close(q.queue)
-	q.done = true
+	q.once.Do(func() {
+		close(q.queue)
+		q.done = true
+	})
 }
 
 func (q *GoQ) publishMessage(msg Message) {
