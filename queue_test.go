@@ -42,7 +42,7 @@ var _ = Describe("Queue", func() {
 			Expect(err).To(HaveOccurred())
 		})
 
-		It("Returns an error when a message is sent to a done queue", func() {
+		It("returns an error when a message is sent to a done queue", func() {
 			publisher := testhelpers.NewTestPublisher()
 			publisher.Responses <- true
 
@@ -131,5 +131,13 @@ var _ = Describe("Queue", func() {
 				return len(publisher.Messages)
 			}).Should(Equal(2))
 		})
+	})
+
+	It("does not panic if StopPublishing multiple times", func() {
+		publisher := testhelpers.NewTestPublisher()
+		queue := NewGoQ(25, publisher)
+
+		queue.StopPublishing()
+		Expect(queue.StopPublishing).ToNot(Panic())
 	})
 })
